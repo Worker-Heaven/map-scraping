@@ -5,36 +5,35 @@ from selenium.common.exceptions import NoSuchElementException
 import time
 import csv
 
+def get_data(data):
+  if len(data) > 0:
+    return data[0].text
+  else:
+    return 'NaN'
+
 def scrape_data(driver):
   time.sleep(1)
   name = driver.find_element_by_xpath("//h1[@class='section-hero-header-title']").text
 
   ratings = driver.find_elements_by_xpath("//span[@class='section-star-display']")
-  if len(ratings) > 0:
-    rating = ratings[0].text
-  else:
-    rating = 'NaN'
+  rating = get_data(ratings)
 
   reviews = driver.find_elements_by_xpath("//li[@class='section-rating-term']//button[@class='widget-pane-link']")
-  if len(reviews) > 0:
-    review = reviews[0].text
-  else:
-    review = 'NaN'
-
-  allInfo = driver.find_elements_by_xpath("//span[@class='section-info-text']//span[@class='widget-pane-link']")
+  review = get_data(reviews)
    
+  addresses = driver.find_elements_by_xpath("//div[@data-section-id='ad']//span[@class='section-info-text']//span[@class='widget-pane-link']")
+  address = get_data(addresses)
+  
+  pluscodes = driver.find_elements_by_xpath("//div[@data-section-id='ol']//span[@class='section-info-text']//span[@class='widget-pane-link']")
+  pluscode = get_data(pluscodes)
 
-  if (len(allInfo) == 4):
-    address = allInfo[0].text
-    website = allInfo[2].text
-    phone = allInfo[3].text
-  else:
-    address = allInfo[0].text
-    website = 'NaN'
-    phone = allInfo[2].text
+  websites = driver.find_elements_by_xpath("//div[@data-section-id='ap']//span[@class='section-info-text']//span[@class='widget-pane-link']")
+  website = get_data(websites)
 
-      
-  photoUrl = driver.find_elements_by_xpath("//div[contains(@class, 'b7bAA58T9bH__container')]//img")[0].get_attribute('src')
+  phones = driver.find_elements_by_xpath("//div[@data-section-id='pn0']//span[@class='section-info-text']//span[@class='widget-pane-link']")
+  phone = get_data(phones)
+  
+  photoUrl = driver.find_elements_by_xpath("//div[@class='section-image-pack-image-container']//img")[0].get_attribute('src')
 
   print ('name', name)
   print ('rating', rating)
@@ -47,7 +46,7 @@ def scrape_data(driver):
   with open('E:/result.csv', 'a+') as csvfile:
     writer = csv.writer(csvfile)
 
-    writer.writerow([name, rating, review, address, website, phone, photoUrl])
+    writer.writerow([name, rating, review, address, pluscode, website, phone, photoUrl])
 
   backBtn = driver.find_element_by_xpath("//button[contains(@class, 'section-back-to-list-button')]")
   backBtn.send_keys("\n")
@@ -63,7 +62,7 @@ chromedriver_path = "E:/Utilities/chromedriver.exe"
 with open('E:/result.csv', 'w') as csvfile:
   writer = csv.writer(csvfile)
 
-  writer.writerow(['name', 'rating', 'review', 'address', 'website', 'phone', 'photoUrl'])
+  writer.writerow(['name', 'rating', 'review', 'address', 'plus code', 'website', 'phone', 'photoUrl'])
 
 # set up chrome options
 chromeOptions = webdriver.ChromeOptions()
