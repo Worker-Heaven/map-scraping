@@ -5,33 +5,58 @@ from selenium.common.exceptions import NoSuchElementException
 import time
 import csv
 
+from lxml import html
+
 def get_data(data):
   if len(data) > 0:
-    return data[0].text
+    return data[0]
   else:
     return 'NaN'
 
 def scrape_data(driver):
-  time.sleep(1)
-  name = driver.find_element_by_xpath("//h1[@class='section-hero-header-title']").text
+  tree = html.fromstring(driver.page_source)
+  time.sleep(2)
 
-  ratings = driver.find_elements_by_xpath("//span[@class='section-star-display']")
-  rating = get_data(ratings)
+  name = tree.xpath("//h1[@class='section-hero-header-title']/text()")
+  name = get_data(name)
 
-  reviews = driver.find_elements_by_xpath("//li[@class='section-rating-term']//button[@class='widget-pane-link']")
-  review = get_data(reviews)
+  rating = tree.xpath("//span[@class='section-star-display']/text()")
+  rating = get_data(rating)
+
+  review = tree.xpath("//li[@class='section-rating-term']//button[@class='widget-pane-link']/text()")
+  review = get_data(review)
+
+  address = tree.xpath("//div[@data-section-id='ad']//span[@class='section-info-text']//span[@class='widget-pane-link']/text()")
+  address = get_data(address)
+
+  pluscode = tree.xpath("//div[@data-section-id='ol']//span[@class='section-info-text']//span[@class='widget-pane-link']/text()")
+  pluscode = get_data(pluscode)
+
+  website = tree.xpath("//div[@data-section-id='ap']//span[@class='section-info-text']//span[@class='widget-pane-link']/text()")
+  website = get_data(website)
+
+  phone = tree.xpath("//div[@data-section-id='pn0']//span[@class='section-info-text']//span[@class='widget-pane-link']/text()")
+  phone = get_data(phone)
+
+  # name = driver.find_element_by_xpath("//h1[@class='section-hero-header-title']").text
+
+  # ratings = driver.find_elements_by_xpath("//span[@class='section-star-display']")
+  # rating = get_data(ratings)
+
+  # reviews = driver.find_elements_by_xpath("//li[@class='section-rating-term']//button[@class='widget-pane-link']")
+  # review = get_data(reviews)
    
-  addresses = driver.find_elements_by_xpath("//div[@data-section-id='ad']//span[@class='section-info-text']//span[@class='widget-pane-link']")
-  address = get_data(addresses)
+  # addresses = driver.find_elements_by_xpath("//div[@data-section-id='ad']//span[@class='section-info-text']//span[@class='widget-pane-link']")
+  # address = get_data(addresses)
   
-  pluscodes = driver.find_elements_by_xpath("//div[@data-section-id='ol']//span[@class='section-info-text']//span[@class='widget-pane-link']")
-  pluscode = get_data(pluscodes)
+  # pluscodes = driver.find_elements_by_xpath("//div[@data-section-id='ol']//span[@class='section-info-text']//span[@class='widget-pane-link']")
+  # pluscode = get_data(pluscodes)
 
-  websites = driver.find_elements_by_xpath("//div[@data-section-id='ap']//span[@class='section-info-text']//span[@class='widget-pane-link']")
-  website = get_data(websites)
+  # websites = driver.find_elements_by_xpath("//div[@data-section-id='ap']//span[@class='section-info-text']//span[@class='widget-pane-link']")
+  # website = get_data(websites)
 
-  phones = driver.find_elements_by_xpath("//div[@data-section-id='pn0']//span[@class='section-info-text']//span[@class='widget-pane-link']")
-  phone = get_data(phones)
+  # phones = driver.find_elements_by_xpath("//div[@data-section-id='pn0']//span[@class='section-info-text']//span[@class='widget-pane-link']")
+  # phone = get_data(phones)
   
   photoUrl = driver.find_elements_by_xpath("//div[@class='section-image-pack-image-container']//img")[0].get_attribute('src')
 
@@ -43,10 +68,10 @@ def scrape_data(driver):
   print ('phone', phone)
   print ('photo url', photoUrl)
 
-  with open('E:/result.csv', 'a+') as csvfile:
-    writer = csv.writer(csvfile)
+  # with open('E:/result.csv', 'a+') as csvfile:
+  #   writer = csv.writer(csvfile)
 
-    writer.writerow([name, rating, review, address, pluscode, website, phone, photoUrl])
+  #   writer.writerow([name, rating, review, address, pluscode, website, phone, photoUrl])
 
   backBtn = driver.find_element_by_xpath("//button[contains(@class, 'section-back-to-list-button')]")
   backBtn.send_keys("\n")
