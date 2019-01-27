@@ -4,37 +4,43 @@ from selenium.common.exceptions import NoSuchElementException
 
 import time
 import csv
+import lxml.html
 
 def get_data(data):
   if len(data) > 0:
     return data[0].text
   else:
-    return 'NaN'
+    return '-'
 
 def scrape_data(driver):
-  time.sleep(1)
+  print ('scraping details...')
   name = driver.find_element_by_xpath("//h1[@class='section-hero-header-title']").text
 
-  ratings = driver.find_elements_by_xpath("//span[@class='section-star-display']")
+  page = lxml.html.fromstring(driver.page_source)
+
+  ratings = page.xpath("//span[@class='section-star-display']")
   rating = get_data(ratings)
 
-  reviews = driver.find_elements_by_xpath("//li[@class='section-rating-term']//button[@class='widget-pane-link']")
+  ratings = page.xpath("//span[@class='section-star-display']")
+  rating = get_data(ratings)
+
+  reviews = page.xpath("//li[@class='section-rating-term']//button[@class='widget-pane-link']")
   review = get_data(reviews)
    
-  addresses = driver.find_elements_by_xpath("//div[@data-section-id='ad']//span[@class='section-info-text']//span[@class='widget-pane-link']")
+  addresses = page.xpath("//div[@data-section-id='ad']//span[@class='section-info-text']//span[@class='widget-pane-link']")
   address = get_data(addresses)
   
-  pluscodes = driver.find_elements_by_xpath("//div[@data-section-id='ol']//span[@class='section-info-text']//span[@class='widget-pane-link']")
+  pluscodes = page.xpath("//div[@data-section-id='ol']//span[@class='section-info-text']//span[@class='widget-pane-link']")
   pluscode = get_data(pluscodes)
 
-  websites = driver.find_elements_by_xpath("//div[@data-section-id='ap']//span[@class='section-info-text']//span[@class='widget-pane-link']")
+  websites = page.xpath("//div[@data-section-id='ap']//span[@class='section-info-text']//span[@class='widget-pane-link']")
   website = get_data(websites)
 
-  phones = driver.find_elements_by_xpath("//div[@data-section-id='pn0']//span[@class='section-info-text']//span[@class='widget-pane-link']")
+  phones = page.xpath("//div[@data-section-id='pn0']//span[@class='section-info-text']//span[@class='widget-pane-link']")
   phone = get_data(phones)
   
   photoUrl = driver.find_elements_by_xpath("//div[@class='section-image-pack-image-container']//img")[0].get_attribute('src')
-
+  
   print ('name', name)
   print ('rating', rating)
   print ('review', review)
